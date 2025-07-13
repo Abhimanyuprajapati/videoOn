@@ -62,7 +62,25 @@ export async function signup(req, res) {
 }
 
 export async function login(req, res) {
-  res.send("login Route");
+ try{
+    const {email, password}= req.body;
+    // check if email and password are provided
+    if(!email || !password){
+        return res.status(400).json({ message: "All Fields are required"});
+    }
+    // check if user not found
+    const user = await User.findOne({email});
+    if(!user){
+        return res.status(401).json({ message: "Invalid email or password"});
+    }
+
+    
+
+
+ }catch (error){
+    console.log(error);
+    res.status(500).json({ message: "Internal server error"});
+ }
 }
 
 export function logout(req, res) {
