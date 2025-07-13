@@ -50,8 +50,6 @@ friends:[
 {timestamps: true}
 );
 
-const User = mongoose.model("User",userSchema);
-
 // pre hook to hash password before saving
 userSchema.pre("save",async function (next) {
     if(!this.isModified("password")) {
@@ -66,6 +64,8 @@ userSchema.pre("save",async function (next) {
         next(error); // Pass the error to the next middleware
     }
 })
+
+const User = mongoose.model("User",userSchema);
 
 export default User;
 

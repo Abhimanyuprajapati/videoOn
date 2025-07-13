@@ -29,7 +29,7 @@ export async function signup(req, res) {
     const idx = Math.floor(Math.random() * 100) + 1; // generate 1 to 100 random number
     const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
-    const newUser = new User.create({
+    const newUser = await User.create({
       fullName,
       email,
       password,
@@ -46,7 +46,7 @@ export async function signup(req, res) {
 
     // create the user in the stream
 
-    
+
     res.cookie("jwt", token, {
       maxAge: 15 * 24 * 60 * 60 * 1000, // 15 days
       httpOnly: true, // Prevents client-side JavaScript from accessing the cookie
