@@ -1,17 +1,24 @@
 import { StreamChat } from "stream-chat";
 import "dotenv/config";
 
-const STREAM_API_KEY = process.env.STREAM_API_KEY;
-const STREAM_API_SECRET_KEY = process.env.STREAM_API_SECRET_KEY;
+const apiKey = process.env.STREAM_API_KEY;
+const apiSecret = process.env.STREAM_API_SECRET_KEY;
 
-if (!STREAM_API_KEY || !STREAM_API_SECRET_KEY) {
+if (!apiKey || !apiSecret) {
   console.error("Stream API key and secret is missing");
 }
 
 const streamClient = StreamChat.getInstance(
-  STREAM_API_KEY,
-  STREAM_API_SECRET_KEY
+  apiKey,
+  apiSecret
 );
 
-// working on this
+export const upsertStreamUser = async (userData) =>{
+  try {
+    await streamClient.upsertUsers([userData]);
+    return userData;
+  }catch (error){
+console.error("Error upserting Stream user:", error);
+  }
+}
 
