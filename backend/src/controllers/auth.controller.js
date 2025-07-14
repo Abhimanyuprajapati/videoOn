@@ -115,3 +115,7 @@ export function logout(req, res) {
   res.clearCookie("jwt");
   res.status(200).json({ message: "Logged out successfully" });
 }
+
+export function onboard(req, res){
+
+}
