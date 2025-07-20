@@ -2,6 +2,7 @@ import express from 'express'
 import dotenv from 'dotenv'
 dotenv.config()
 import authRoutes from './routes/auth.route.js'
+import userRoutes from './routes/user.route.js'
 import { connectDB } from './lib/db.js'
 import cookieParser from 'cookie-parser'
 
@@ -18,6 +19,7 @@ app.get('/', (req, res) => {
 
 // auth routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}`)
