@@ -104,10 +104,14 @@ export async function acceptFriendRequest(req, res) {
         });
 
         res.status(200).json({ message: "Friend request accepted successfully." });
-        
+
     } catch (error) {
         console.error("Error accepting friend request:", error);
         res.status(500).json({ message: "Internal server error" });
         
     }
+}
+
+export async function getFriendRequest(req, res) {
+    
 }
