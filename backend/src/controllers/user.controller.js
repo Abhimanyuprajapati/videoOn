@@ -128,3 +128,16 @@ export async function getFriendRequest(req, res) {
         console.error("Error fetching friend requests:", error);
     }
 }
+
+export async function getOutgoingFriendRequest(req, res) {
+    try {
+        const outgoingRequest = await FriendRequest.find({
+            sender: req.user.id,
+            status: "pending",
+        }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage location bio");
+        res.status(200).json({ outgoingRequest });
+    } catch (error) {
+        res.status(500).json({ message: "Internal server error" });
+        console.error("Error fetching friend requests:", error);
+    }
+}

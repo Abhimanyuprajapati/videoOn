@@ -22,3 +22,12 @@ console.error("Error upserting Stream user:", error);
   }
 }
 
+export const generateStreamToken = async (userId) =>{
+try {
+  // ensure userId is a string
+  const userIdString = userId.toString();
+  return streamClient.createToken(userIdString);
+} catch (error) {
+  console.error("Error generateStreamToken Stream user:", error);
+}
+}
