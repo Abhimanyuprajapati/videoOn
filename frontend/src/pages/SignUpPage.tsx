@@ -1,6 +1,6 @@
-import React from 'react'
+import React from 'react';
 
-export const SignUpPage = () => {
+export const SignUpPage: React.FC = () => {
   return (
     <div>SignUpPage</div>
   )
