@@ -6,8 +6,11 @@ import { NotificationPage } from "./pages/NotificationPage";
 import { OnboardingPage } from "./pages/OnboardingPage";
 import { CallPage } from "./pages/CallPage";
 import { ChatPage } from "./pages/ChatPage";
+import { Toaster } from 'react-hot-toast';
 
 function App() {
+
+  
   return (
     <div className="h-screen" data-theme="night">
       <Routes>
@@ -19,8 +22,9 @@ function App() {
         <Route path="/call" element={<CallPage />} />
         <Route path="/chat" element={<ChatPage />} />
       </Routes>
+       <Toaster />
     </div>
-  );
+  ); 
 }
 
 export default App;
