@@ -1,4 +1,4 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { SignUpPage } from "./pages/SignUpPage";
@@ -7,20 +7,31 @@ import { OnboardingPage } from "./pages/OnboardingPage";
 import { CallPage } from "./pages/CallPage";
 import { ChatPage } from "./pages/ChatPage";
 import { Toaster } from 'react-hot-toast';
+import { useQuery } from "@tanstack/react-query";
+import { axiosInstance } from "./lib/axios";
 
 function App() {
 
-  
+  const {data: authData, isloading, error} = useQuery({
+    queryKey: ['authUser'],
+    queryFn: async ()=>{
+      const response = await axiosInstance.get('/auth/me');
+      return response.data;
+    },
+    retry: false, // Disable retry on failure
+  })
+
+const authUser = authData?.user;  
   return (
     <div className="h-screen" data-theme="night">
       <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/signup" element={<SignUpPage />} />
-        <Route path="/notification" element={<NotificationPage />} />
-        <Route path="/onboarding" element={<OnboardingPage />} />
-        <Route path="/call" element={<CallPage />} />
-        <Route path="/chat" element={<ChatPage />} />
+        <Route path="/" element={ authUser ? <HomePage /> : <Navigate to='/login' />} />
+        <Route path="/login" element={ !authUser ? <LoginPage /> : <Navigate to='/' />} />
+        <Route path="/signup" element={  !authUser ? <SignUpPage /> : <Navigate to='/' />} />
+        <Route path="/notification" element={ authUser ? <NotificationPage /> : <Navigate to='/login' />} />
+        <Route path="/onboarding" element={ authUser ? <OnboardingPage /> : <Navigate to='/login' />} />
+        <Route path="/call" element={ authUser ? <CallPage /> : <Navigate to='/login' />} />
+        <Route path="/chat" element={ authUser ? <ChatPage /> : <Navigate to='/login' />} />
       </Routes>
        <Toaster />
     </div>
