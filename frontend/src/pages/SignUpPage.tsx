@@ -2,6 +2,8 @@ import React from "react";
 import { ShipWheel } from "lucide-react";
 import { Link } from "react-router-dom";
 import videoCall from '../assets/videocallpanel.png';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { SignUpAPI } from "../lib/api";
 
 export const SignUpPage: React.FC = () => {
   const [signupData, setSignupData] = React.useState({
@@ -10,8 +12,16 @@ export const SignUpPage: React.FC = () => {
     password: "",
   });
 
-  const handleSignUp = (e) => {
+  const queryClient = useQueryClient();
+
+  const {mutate, isPending, error} = useMutation({
+    mutationFn: SignUpAPI,
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["authUser"] }),
+  });
+
+  const handleSignUp = (e:any) => {
     e.preventDefault();
+    mutate(signupData);
   };
   return (
     <>
@@ -27,6 +37,13 @@ export const SignUpPage: React.FC = () => {
                 videoON
               </span>
             </div>
+
+             {/* ERROR MESSAGE IF ANY */}
+          {error && (
+            <div className="alert alert-error mb-4">
+              <span>{error.response.data.message}</span>
+            </div>
+          )}
 
             <div className="w-full ">
               <form onSubmit={handleSignUp}>
