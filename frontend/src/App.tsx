@@ -23,7 +23,7 @@ function App() {
 
 const authUser = authData?.user;  
   return (
-    <div className="h-screen" data-theme="night">
+    <div className="h-screen" data-theme="forest">
       <Routes>
         <Route path="/" element={ authUser ? <HomePage /> : <Navigate to='/login' />} />
         <Route path="/login" element={ !authUser ? <LoginPage /> : <Navigate to='/' />} />
