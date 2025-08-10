@@ -8,7 +8,7 @@ export const LoginPage: React.FC = () => {
     email: "",
     password: "",
   });
-  const handleSignIn = (e)=>{
+  const handleSignIn = (e:any)=>{
     e.preventDefault();
   }
   return (
