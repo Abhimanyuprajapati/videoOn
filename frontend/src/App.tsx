@@ -12,7 +12,7 @@ import { axiosInstance } from "./lib/axios";
 
 function App() {
 
-  const {data: authData, isloading, error} = useQuery({
+  const {data: authData} = useQuery({
     queryKey: ['authUser'],
     queryFn: async ()=>{
       const response = await axiosInstance.get('/auth/me');
