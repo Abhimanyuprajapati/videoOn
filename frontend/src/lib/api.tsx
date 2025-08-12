@@ -21,3 +21,9 @@ export const SignInAPI = async (data: SignInPayload): Promise<any> => {
   const response = await axiosInstance.post("/auth/login", data);
   return response;
 };
+
+
+export const getAuthUser = async () => {
+    const response = await axiosInstance.get('/auth/me');
+    return response.data;
+}
