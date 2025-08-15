@@ -36,7 +36,16 @@ export const OnboardingAPI = async (data: OnboardingPayload): Promise<any> => {
   return response;
 };
 
+export const LogoutAPI = async () => {
+  const response = await axiosInstance.post("/auth/logout");
+  return response;
+};
+
 export const getAuthUser = async () => {
-    const response = await axiosInstance.get('/auth/me');
+    try {
+       const response = await axiosInstance.get('/auth/me');
     return response.data;
+    } catch (error) {
+      return null;
+    }
 }
