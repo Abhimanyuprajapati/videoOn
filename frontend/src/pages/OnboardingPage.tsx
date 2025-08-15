@@ -1,8 +1,9 @@
 
-import { CameraIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
+import { CameraIcon, LoaderIcon, MapPinIcon, ShipWheelIcon, ShuffleIcon } from "lucide-react";
 import { LANGUAGES } from "../constants";
 import { UseAuth } from "../hooks/UseAuth";
 import React from "react";
+import { OnboardingAPI } from "../lib/api";
 
 
 export const OnboardingPage: React.FC = () => {
@@ -17,11 +18,30 @@ export const OnboardingPage: React.FC = () => {
     location: authUser?.location || "",
     profilePic: authUser?.profilePic || "",
   });
+  const [error, setError] = React.useState<string | null>(null);
+  const [isPending, setIsPending] = React.useState(false);
 
-  const handleSubmit =(e:any)=>{
+  const handleSubmit =async(e:any)=>{
     e.preventDefault();
-    // Handle form submission logic here
+    setIsPending(true);
     console.log("Form submitted with data:", formState);
+     try {
+          const response = await OnboardingAPI(formState);
+          console.log("onboarding successful:", response);
+          setIsPending(false);
+          if (response.status === 200) {
+            console.log("onboarding successful:", response.data);
+          } else {
+            setError(response.data.message);
+          }
+        } catch (err: any) {
+          console.error("onboarding failed:", err);
+          if (err.response) {
+            setError(err.response.data.message || "An error occurred");
+          } else {
+            setError(err.message || "An error occurred");
+          }
+        }
   }
   return (
     <>
@@ -31,7 +51,6 @@ export const OnboardingPage: React.FC = () => {
           <h1 className="text-2xl sm:text-3xl font-bold text-center mb-6">Complete Your Profile</h1>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            {/* PROFILE PIC CONTAINER */}
             <div className="flex flex-col items-center justify-center space-y-4">
               {/* IMAGE PREVIEW */}
               <div className="size-32 rounded-full bg-base-300 overflow-hidden">
@@ -56,6 +75,12 @@ export const OnboardingPage: React.FC = () => {
                 </button>
               </div>
             </div>
+
+  {error && (
+              <div className="alert alert-error mb-4 text-white">
+                <span>{error}</span>
+              </div>
+            )}
 
             {/* FULL NAME */}
             <div className="form-control">
@@ -149,10 +174,19 @@ export const OnboardingPage: React.FC = () => {
 
             {/* SUBMIT BUTTON */}
 
-            <button className="btn btn-primary w-full"  type="submit">          {/* disabled={isPending}  */}
+            <button className="btn btn-primary w-full" disabled={isPending}  type="submit">
           
-               <ShipWheelIcon className="size-5 mr-2" />
+              {!isPending ? (
+                <>
+                  <ShipWheelIcon className="size-5 mr-2" />
                   Complete Onboarding
+                </>
+              ) : (
+                <>
+                  <LoaderIcon className="animate-spin size-5 mr-2" />
+                  Onboarding...
+                </>
+              )}
             </button>
           </form>
         </div>
@@ -168,14 +202,4 @@ export const OnboardingPage: React.FC = () => {
 
 
 
-    // {!isPending ? (
-    //             <>
-    //               <ShipWheelIcon className="size-5 mr-2" />
-    //               Complete Onboarding
-    //             </>
-    //           ) : (
-    //             <>
-    //               <LoaderIcon className="animate-spin size-5 mr-2" />
-    //               Onboarding...
-    //             </>
-    //           )}
+

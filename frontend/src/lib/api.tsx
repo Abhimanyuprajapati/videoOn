@@ -11,6 +11,15 @@ interface SignInPayload {
   password: string;
 }
 
+interface OnboardingPayload {
+  fullName: string;
+  bio: string;
+  nativeLanguage: string;
+  learningLanguage: string;
+  location: string;
+  profilePicture?: File | null;
+}
+
 export const SignUpAPI = async (data: SignUpPayload): Promise<any> => {
   const response = await axiosInstance.post("/auth/signup", data);
   return response;
@@ -22,6 +31,10 @@ export const SignInAPI = async (data: SignInPayload): Promise<any> => {
   return response;
 };
 
+export const OnboardingAPI = async (data: OnboardingPayload): Promise<any> => {
+  const response = await axiosInstance.post("/auth/onboarding", data);
+  return response;
+};
 
 export const getAuthUser = async () => {
     const response = await axiosInstance.get('/auth/me');
