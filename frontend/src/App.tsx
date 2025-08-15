@@ -10,9 +10,11 @@ import { Toaster } from "react-hot-toast";
 import PageLoader from "./components/PageLoader";
 import { UseAuth } from "./hooks/UseAuth";
 import { Layout } from "./components/Layout";
+import { useThemeStore } from "./store/useThemeStore";
 
 function App() {
   const { isLoading, authUser } = UseAuth();
+  const {theme} = useThemeStore();
 
   const isAuthenticated = Boolean(authUser);
   const isOnboarded = authUser?.isOnBoarded;   
@@ -27,7 +29,7 @@ function App() {
   }
 
   return (
-    <div className="h-screen" data-theme="forest">
+    <div className="h-screen" data-theme={theme}>
       <Routes>
         <Route
           path="/"

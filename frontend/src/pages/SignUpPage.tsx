@@ -4,8 +4,10 @@ import { Link } from "react-router-dom";
 import videoCall from "../assets/videocallpanel.png";
 import { SignUpAPI } from "../lib/api";
 import { useQueryClient } from "@tanstack/react-query";
+import { useThemeStore } from "../store/useThemeStore";
 
 export const SignUpPage: React.FC = () => {
+    const {theme} = useThemeStore();
   const [signupData, setSignupData] = React.useState({
     fullName: "",
     email: "",
@@ -43,7 +45,7 @@ export const SignUpPage: React.FC = () => {
     <>
       <div
         className="h-screen flex items-center justify-center p-4 sm:p-6 md:p-8"
-        data-theme="forest"
+       data-theme={theme}
       >
         <div className="border border-primary/25 flex flex-col lg:flex-row w-full max-w-5xl mx-auto bg-base-100 rounded-xl shadow-lg overflow-hidden">
           <div className="w-full lg:w-1/2 p-4 sm:p-8 flex flex-col ">
