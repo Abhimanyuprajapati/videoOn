@@ -4,6 +4,7 @@ import { LANGUAGES } from "../constants";
 import { UseAuth } from "../hooks/UseAuth";
 import React from "react";
 import { OnboardingAPI } from "../lib/api";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 export const OnboardingPage: React.FC = () => {
@@ -21,6 +22,8 @@ export const OnboardingPage: React.FC = () => {
   const [error, setError] = React.useState<string | null>(null);
   const [isPending, setIsPending] = React.useState(false);
 
+    const queryClient = useQueryClient();
+
   const handleSubmit =async(e:any)=>{
     e.preventDefault();
     setIsPending(true);
@@ -31,6 +34,7 @@ export const OnboardingPage: React.FC = () => {
           setIsPending(false);
           if (response.status === 200) {
             console.log("onboarding successful:", response.data);
+               queryClient.invalidateQueries({ queryKey: ["authUser"] });
           } else {
             setError(response.data.message);
           }
@@ -69,7 +73,7 @@ export const OnboardingPage: React.FC = () => {
 
               {/* Generate Random Avatar BTN */}   
               <div className="flex items-center gap-2">
-                <button type="button"  className="btn btn-accent">      {/*  onClick={handleRandomAvatar} */}
+                <button type="button"  className="btn btn-accent"> 
                   <ShuffleIcon className="size-4 mr-2" />
                   Generate Random Avatar
                 </button>
