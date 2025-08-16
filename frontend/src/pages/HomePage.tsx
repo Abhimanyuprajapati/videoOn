@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
 import { getOutGoingFriendRequests, getRecommendedUser, getUserFriends } from '../lib/api';
+import { NoFriendsFound } from '../components/NoFriendsFound';
+import { FriendCard } from '../components/FriendCard';
 
 export const HomePage: React.FC = () => {
 
@@ -81,7 +83,7 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-         {loadingUsers ? (
+         {/* {loadingUsers ? (
             <div className="flex justify-center py-12">
               <span className="loading loading-spinner loading-lg" />
             </div>
@@ -158,7 +160,7 @@ export const HomePage: React.FC = () => {
                 );
               })}
             </div>
-          )}
+          )} */}
         </section>
       </div>
     </div>
