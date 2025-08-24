@@ -83,7 +83,7 @@ export const ChatPage: React.FC = () => {
     if (loading || !chatClient || !channel) return <ChatLoader />;
 
   return (
-    <div className="h-[93vh]">
+    <div className="h-[88vh] p-4">
       <Chat client={chatClient}>
         <Channel channel={channel}>
           <div className="w-full relative">
