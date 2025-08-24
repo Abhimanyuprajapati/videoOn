@@ -1,22 +1,34 @@
 import React, { useEffect } from 'react';
 import { Link } from "react-router";
 import { CheckCircleIcon, MapPinIcon, UserPlusIcon, UsersIcon } from "lucide-react";
-import { getOutGoingFriendRequests, getRecommendedUser, getUserFriends } from '../lib/api';
+import { getOutGoingFriendRequests, getRecommendedUser, getUserFriends, sendFriendRequest } from '../lib/api';
 import { NoFriendsFound } from '../components/NoFriendsFound';
-import { FriendCard } from '../components/FriendCard';
+import { FriendCard, GetLanguageFlag } from '../components/FriendCard';
+
+
+
+export const capitialize = (str) => str.charAt(0).toUpperCase() + str.slice(1);
 
 export const HomePage: React.FC = () => {
 
   const [recommendedUsers, setRecommendedUsers] = React.useState([]);
+  const [loadingUsers, setLoadingUsers] = React.useState(false);
   const [friends, setFriends] = React.useState([]);
-  const [outgoingRequestsIds, setOutgoingRequestsIds] = React.useState(new Set());
+  const [loadingFriends, setLoadingFriends] = React.useState(false);
+  // const [outgoingRequestsIds, setOutgoingRequestsIds] = React.useState(new Set());
+  // const [outgoingRequestsIds, setOutgoingRequestsIds] = React.useState<string[]>([]);
+ const [outgoingRequestsIds, setOutgoingRequestsIds] = React.useState<Set<string>>(new Set());
+
+
 
   useEffect(()=>{
     const fetchRecommendedUsers = async () => {
       // Fetch recommended users from the API
+      setLoadingUsers(true);
       try {
         const response = await getRecommendedUser();
-        setRecommendedUsers(response);
+        setRecommendedUsers(response.recommendedUser);
+        setLoadingUsers(false);
       } catch (error) {
         console.error("Failed to fetch recommended users:", error);
       }
@@ -24,9 +36,11 @@ export const HomePage: React.FC = () => {
 
     const fetchFriends = async () => {
       // Fetch friends from the API
+      setLoadingFriends(true);
       try {
         const response = await getUserFriends();
-        setFriends(response);
+        setFriends(response.friends);
+        setLoadingFriends(false);
       } catch (error) {
         console.error("Failed to fetch friends:", error);
       }
@@ -36,7 +50,10 @@ export const HomePage: React.FC = () => {
       // Fetch outgoing friend requests from the API  
       try {
         const response = await getOutGoingFriendRequests();
-        setOutgoingRequestsIds(new Set(response.map(req => req.to)));
+        // setOutgoingRequestsIds(response.outgoingRequest);
+        // setOutgoingRequestsIds(new Set(response.outgoingRequest)); 
+          const ids = response.outgoingRequest.map((req) => req.recipient._id);
+    setOutgoingRequestsIds(new Set(ids));
       } catch (error) {
         console.error("Failed to fetch outgoing requests:", error);
       }
@@ -46,6 +63,20 @@ export const HomePage: React.FC = () => {
     fetchFriends();
     fetchOutgoingRequests();
   },[])
+
+  const sendFriendRequests = async (userId: string) => {
+      // Fetch outgoing friend requests from the API  
+      try {
+        const response = await sendFriendRequest(userId); 
+        console.log("Friend request sent:", response);
+        // setOutgoingRequestsIds(response);
+      } catch (error) {
+        console.error("Failed to fetch outgoing requests:", error);
+      }
+    }
+
+console.log("outgoingRequestsIds", outgoingRequestsIds);
+
   return (
      <div className="p-4 sm:p-6 lg:p-8">
       <div className="container mx-auto space-y-10">
@@ -83,7 +114,10 @@ export const HomePage: React.FC = () => {
             </div>
           </div>
 
-         {/* {loadingUsers ? (
+      
+       
+
+ {loadingUsers ? (
             <div className="flex justify-center py-12">
               <span className="loading loading-spinner loading-lg" />
             </div>
@@ -124,24 +158,22 @@ export const HomePage: React.FC = () => {
                   
                       <div className="flex flex-wrap gap-1.5">
                         <span className="badge badge-secondary">
-                          {getLanguageFlag(user.nativeLanguage)}
+                          {GetLanguageFlag(user.nativeLanguage)}
                           Native: {capitialize(user.nativeLanguage)}
                         </span>
                         <span className="badge badge-outline">
-                          {getLanguageFlag(user.learningLanguage)}
+                          {GetLanguageFlag(user.learningLanguage)}
                           Learning: {capitialize(user.learningLanguage)}
                         </span>
                       </div>
 
                       {user.bio && <p className="text-sm opacity-70">{user.bio}</p>}
-
-                  
                       <button
                         className={`btn w-full mt-2 ${
                           hasRequestBeenSent ? "btn-disabled" : "btn-primary"
                         } `}
-                        onClick={() => sendRequestMutation(user._id)}
-                        disabled={hasRequestBeenSent || isPending}
+                        onClick={() => sendFriendRequests(user._id)}
+                        disabled={hasRequestBeenSent}
                       >
                         {hasRequestBeenSent ? (
                           <>
@@ -160,9 +192,11 @@ export const HomePage: React.FC = () => {
                 );
               })}
             </div>
-          )} */}
+          )}
+       
         </section>
       </div>
     </div>
   )
 }
+

@@ -43,6 +43,7 @@ export const GetLanguageFlag: React.FC<LanguageProps> = ({ language }) => {
   if (!language) return null;
 
   const langLower = language.toLowerCase();
+  console.log("langLower", langLower);
   const countryCode = LANGUAGE_TO_FLAG[langLower];
 
   if (countryCode) {
