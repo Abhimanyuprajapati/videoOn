@@ -1,20 +1,6 @@
-// import React from 'react';
-// import { useParams } from 'react-router-dom';
-
-// export const CallPage: React.FC = () => {
-//   const {id}= useParams();
-//   return (
-//     <div>CallPage</div>
-//   )
-// }
-
-
 
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
-import useAuthUser from "../hooks/useAuthUser";
-import { useQuery } from "@tanstack/react-query";
-import { getStreamToken } from "../lib/api";
 
 import {
   StreamVideo,
@@ -29,78 +15,58 @@ import {
 
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
+import { UseAuth } from "../hooks/UseAuth";
+import { getStreamToken } from "../lib/api";
 import PageLoader from "../components/PageLoader";
 
-const STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
+const VITE_STREAM_API_KEY = import.meta.env.VITE_STREAM_API_KEY;
 
-
-const CallContent = () => {
-  const { useCallCallingState } = useCallStateHooks();
-  const callingState = useCallCallingState();
-
-  const navigate = useNavigate();
-
-  if (callingState === CallingState.LEFT) return navigate("/");
-
-  return (
-    <StreamTheme>
-      <SpeakerLayout />
-      <CallControls />
-    </StreamTheme>
-  );
-};
 
 export const CallPage: React.FC = () => {
   const { id: callId } = useParams();
   const [client, setClient] = useState(null);
   const [call, setCall] = useState(null);
   const [isConnecting, setIsConnecting] = useState(true);
+  // const [isLoading, setIsLoading] = useState(false);
 
-  const { authUser, isLoading } = useAuthUser();
+  const { authUser, isLoading } = UseAuth();
 
-  const { data: tokenData } = useQuery({
-    queryKey: ["streamToken"],
-    queryFn: getStreamToken,
-    enabled: !!authUser,
-  });
+    useEffect(() => {
+  const initCall = async () => {
+    try {
+      // setIsLoading(true);
+      const response = await getStreamToken();
+      if (!response?.token || !authUser) return;
 
-  useEffect(() => {
-    const initCall = async () => {
-      if (!tokenData.token || !authUser || !callId) return;
+      const user = {
+        id: authUser._id,
+        name: authUser.fullName,
+        image: authUser.profilePic,
+      };
 
-      try {
-        console.log("Initializing Stream video client...");
+      const videoClient = new StreamVideoClient({
+        apiKey: VITE_STREAM_API_KEY,
+        user,
+        token: response.token,
+      });
 
-        const user = {
-          id: authUser._id,
-          name: authUser.fullName,
-          image: authUser.profilePic,
-        };
+      const callInstance = videoClient.call("default", callId);
+      await callInstance.join({ create: true });
 
-        const videoClient = new StreamVideoClient({
-          apiKey: STREAM_API_KEY,
-          user,
-          token: tokenData.token,
-        });
+      setClient(videoClient);
+      setCall(callInstance);
+      // setIsLoading(false);
+    } catch (error) {
+      console.error("Error joining call:", error);
+      toast.error("Could not join the call. Please try again.");
+    } finally {
+      setIsConnecting(false);
+    }
+  };
 
-        const callInstance = videoClient.call("default", callId);
+  initCall();
+}, [authUser, callId]);
 
-        await callInstance.join({ create: true });
-
-        console.log("Joined call successfully");
-
-        setClient(videoClient);
-        setCall(callInstance);
-      } catch (error) {
-        console.error("Error joining call:", error);
-        toast.error("Could not join the call. Please try again.");
-      } finally {
-        setIsConnecting(false);
-      }
-    };
-
-    initCall();
-  }, [tokenData, authUser, callId]);
 
   if (isLoading || isConnecting) return <PageLoader />;
 
@@ -120,6 +86,32 @@ export const CallPage: React.FC = () => {
         )}
       </div>
     </div>
+  );
+
+
+};
+  const CallContent: React.FC = () => {
+ 
+
+
+   const { useCallCallingState } = useCallStateHooks();
+  const callingState = useCallCallingState();
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      navigate("/");
+    }
+  }, [callingState, navigate]);
+
+  // When navigating, render nothing
+  if (callingState === CallingState.LEFT) return null;
+
+  return (
+    <StreamTheme>
+      <SpeakerLayout />
+      <CallControls />
+    </StreamTheme>
   );
 };
 
